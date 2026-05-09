@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Marathon Tally</title>
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <!-- FontAwesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Styles & Scripts -->
+    <link rel="stylesheet" href="styles.css">
+    <script src="app.js" defer></script>
+</head>
+<body>
+    <div class="app-container">
+        <!-- Header -->
+        <header class="glass-panel">
+            <div class="header-left">
+                <div class="logo-icon"><i class="fa-solid fa-person-running"></i></div>
+                <h1>Marathon Tally</h1>
+            </div>
+            <button id="settingsBtn" class="btn btn-icon"><i class="fa-solid fa-gear"></i></button>
+        </header>
+
+        <!-- Settings Modal (Hidden by default) -->
+        <div id="settingsModal" class="modal hidden">
+            <div class="modal-content glass-panel">
+                <div class="modal-header">
+                    <h2>Training Goals</h2>
+                    <button id="closeSettingsBtn" class="btn btn-icon btn-close"><i class="fa-solid fa-xmark"></i></button>
+                </div>
+                <form id="settingsForm">
+                    <div class="form-group">
+                        <label for="goalDistance">Total Training Mileage Goal (miles)</label>
+                        <input type="number" id="goalDistance" step="0.1" required placeholder="e.g. 300">
+                    </div>
+                    <div class="form-group">
+                        <label for="marathonGoalTime">Marathon Goal Time (HH:MM)</label>
+                        <input type="text" id="marathonGoalTime" required placeholder="e.g. 03:30" pattern="^\d{1,2}:[0-5]\d$">
+                        <small>Format: Hours:Minutes (e.g. 03:45 for 3 hours 45 minutes)</small>
+                    </div>
+                    <button type="submit" class="btn btn-primary btn-block">Save Goals</button>
+                </form>
+            </div>
+        </div>
+
+        <!-- Dashboard -->
+        <main>
+            <!-- Progress Section -->
+            <section class="dashboard-section glass-panel highlight-panel">
+                <h2>Training Progress</h2>
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-title">Total Run</div>
+                        <div class="stat-value"><span id="totalMiles">0</span> <small>mi</small></div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-title">Target Goal</div>
+                        <div class="stat-value"><span id="targetMiles">0</span> <small>mi</small></div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-title">Runs</div>
+                        <div class="stat-value" id="totalRuns">0</div>
+                    </div>
+                </div>
+                
+                <div class="progress-container">
+                    <div class="progress-bar-bg">
+                        <div class="progress-bar-fill" id="trainingProgressBar"></div>
+                    </div>
+                    <div class="progress-labels">
+                        <span>0 mi</span>
+                        <span id="progressPercentage">0%</span>
+                        <span id="progressTargetLabel">0 mi</span>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Predictions Section -->
+            <section class="dashboard-section glass-panel prediction-panel">
+                <div class="section-header">
+                    <h2><i class="fa-solid fa-wand-magic-sparkles"></i> AI Predictions</h2>
+                </div>
+                <div class="prediction-content">
+                    <div class="pred-grid">
+                        <div class="pred-item">
+                            <span class="pred-label">Avg Pace</span>
+                            <span class="pred-value" id="avgPace">--:-- /mi</span>
+                        </div>
+                        <div class="pred-item">
+                            <span class="pred-label">Predicted Marathon</span>
+                            <span class="pred-value" id="predictedTime">--:--:--</span>
+                        </div>
+                        <div class="pred-item">
+                            <span class="pred-label">Goal Time</span>
+                            <span class="pred-value" id="goalTimeDisplay">--:--:--</span>
+                        </div>
+                    </div>
+                    <div class="suggestion-box" id="suggestionBox">
+                        <i class="fa-solid fa-lightbulb suggestion-icon"></i>
+                        <p id="suggestionText">Add some runs to get personalized pacing suggestions!</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Add Run Section -->
+            <section class="dashboard-section glass-panel">
+                <h2>Log a New Run</h2>
+                <form id="addRunForm" class="add-run-form">
+                    <div class="form-row">
+                        <div class="form-group flex-1">
+                            <label for="runDate">Date</label>
+                            <input type="date" id="runDate" required>
+                        </div>
+                        <div class="form-group flex-1">
+                            <label for="runDistance">Distance (mi)</label>
+                            <input type="number" id="runDistance" step="0.01" min="0.01" required placeholder="e.g. 5.5">
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group flex-2">
+                            <label>Duration (HH:MM:SS)</label>
+                            <div class="duration-inputs">
+                                <input type="number" id="runHours" min="0" placeholder="HH">
+                                <span>:</span>
+                                <input type="number" id="runMinutes" min="0" max="59" required placeholder="MM">
+                                <span>:</span>
+                                <input type="number" id="runSeconds" min="0" max="59" required placeholder="SS">
+                            </div>
+                        </div>
+                    </div>
+                    <button type="submit" class="btn btn-primary btn-block"><i class="fa-solid fa-plus"></i> Add Run</button>
+                </form>
+            </section>
+
+            <!-- Run History -->
+            <section class="dashboard-section list-section">
+                <h2>Run History</h2>
+                <div id="runList" class="run-list">
+                    <!-- Run items will be injected here via JS -->
+                </div>
+            </section>
+        </main>
+    </div>
+</body>
+</html>
